@@ -1,0 +1,110 @@
+###user management commands
+adduser <username>
+deluser <username>
+passwd <username>
+groupadd mygroup
+groupdel mygroup
+usermod -G: This command is used to add or remove a user from a group. For example, to add a user to a group
+id root
+chown john myfile.txt
+chgrp mygroup myfile.txt
+
+###process management commands
+ps aux
+top
+kill <pid>
+
+###filesystem management commands
+touch 
+vi 
+echo 
+cat
+rm 
+mv
+link 
+cp 
+mkdir
+ls 
+cd 
+pwd 
+rmdir
+df and du 
+###process management commands 
+ps
+top
+kill
+fg
+bg
+top -H
+### details of process management command   
+# Display your currently running processes
+ps
+
+# Display all the currently running processes on the system.
+ps -ef
+
+# Display process information for processname
+ps -ef | grep processname
+
+# Display and manage the top processes
+top
+
+# Interactive process viewer (top alternative)
+htop
+
+# Kill process with process ID of pid
+kill pid
+
+# Kill all processes named processname
+killall processname
+
+# Start program in the background
+program &
+
+# Display stopped or background jobs
+bg
+
+# Brings the most recent background job to foreground
+fg
+
+# Brings job n to the foreground
+fg n
+
+### Networking commands 
+# Display all network interfaces and IP address
+ip a
+
+# Display eth0 address and details
+ip addr show dev eth0
+
+# Query or control network driver and hardware settings
+ethtool eth0
+# Send ICMP echo request to host
+ping host
+
+# Display whois information for domain
+whois domain
+
+# Display DNS information for domain
+dig domain
+
+# Reverse lookup of IP_ADDRESS
+dig -x IP_ADDRESS
+
+# Display DNS IP address for domain
+host domain
+
+# Display the network address of the host name.
+hostname -i
+
+# Display all local IP addresses of the host.
+hostname -I
+
+# Download http://domain.com/file
+wget http://domain.com/file
+
+# Display listening tcp and udp ports and corresponding programs
+netstat -nutlp
+
+
+

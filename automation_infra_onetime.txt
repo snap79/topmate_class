@@ -1,0 +1,51 @@
+VPC:
+
+aws ec2 create-vpc --cidr-block 10.0.0.0/16 --instance-tenancy default --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=TestVPC}]'
+
+Get VPC ID:
+
+aws ec2 describe-vpcs --filters "Name=tag-key,Values=Name" --query "Vpcs[*].[VpcId, Tags[?Key=='Name'].Value|[0]]" --output table
+
+
+Subnet:
+
+aws ec2 create-subnet --vpc-id <put your value> --cidr-block 10.0.0.0/25 --availability-zone  ap-south-1a --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=Public}]'
+
+Consolidated command:
+
+aws ec2 create-vpc --cidr-block 10.0.0.0/16 --tag-specifications 'ResourceType=vpc,Tags=[{Key=Name,Value=TestVPC-1}]' --query 'Vpc.{VpcId:VpcId}' | aws ec2 create-subnet --vpc-id $(jq -r '.VpcId') --cidr-block 10.0.0.0/24 --availability-zone ap-south-1a --tag-specifications 'ResourceType=subnet,Tags=[{Key=Name,Value=PublicSubnet}]'
+
+Security Group:
+
+aws ec2 create-security-group --group-name AccessSecurityGroup --description "Allow all traffic from snadeem's IP" --vpc-id <put your value> --query 'GroupId' --output text | xargs -I {} aws ec2 create-tags --resources {} --tags Key=Name,Value=AccessSecurityGroup
+
+Internet Gateway:
+
+aws ec2 create-internet-gateway --query 'InternetGateway.{InternetGatewayId:InternetGatewayId}' --output text | \
+  xargs -I {} sh -c 'aws ec2 attach-internet-gateway --vpc-id <put your value> --internet-gateway-id {} && \
+  aws ec2 create-tags --resources {} --tags Key=Name,Value=AccessInternetGateway'
+
+aws ec2 describe-internet-gateways --query 'InternetGateways[].InternetGatewayId' --output text
+
+
+
+RouteTable:
+aws ec2 create-route-table --vpc-id <put your value> --tag-specifications 'ResourceType=route-table,Tags=[{Key=Name,Value=PublicRT}]'\
+  --query 'RouteTable.{RouteTableId:RouteTableId}' \
+  --output text | \
+  xargs -I {} aws ec2 create-route --route-table-id {} \
+  --destination-cidr-block 0.0.0.0/0 \
+  --gateway-id <put your value>
+ 
+Subnet & RouteTable Association
+aws ec2 associate-route-table --subnet-id <put your value> --route-table-id <put your value>
+
+#########################################################compute resource ################################################
+
+MY_PUBLIC_IP=$(curl -s http://ifconfig.me)
+
+# Allow SSH (port 22)
+aws ec2 authorize-security-group-ingress --group-id YOUR_SECURITY_GROUP_ID --protocol tcp --port 22 --cidr $MY_PUBLIC_IP/32
+
+# Allow HTTP (port 80)
+aws ec2 authorize-security-group-ingress --group-id YOUR_SECURITY_GROUP_ID --protocol tcp --port 80 --cidr $MY_PUBLIC_IP/32
